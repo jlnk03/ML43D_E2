@@ -37,7 +37,7 @@ def train(model, trainloader, valloader, device, config):
             optimizer.zero_grad()
 
             # forward pass
-            print(batch['points'].shape)
+            #print(batch['points'].shape)
             prediction = model(batch['points'])
 
             # compute loss

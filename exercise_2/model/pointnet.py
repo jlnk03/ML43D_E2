@@ -147,7 +147,7 @@ class PointNetSegmentation(nn.Module):
         self.bn2 = nn.BatchNorm1d(256)
         self.conv3 = nn.Conv1d(256, 128, 1)
         self.bn3 = nn.BatchNorm1d(128)
-        self.conv4 = nn.Conv1d(128, 50, 1)
+        self.conv4 = nn.Conv1d(128, self.num_classes, 1)
 
     def forward(self, x):
         x = self.encoder(x)
