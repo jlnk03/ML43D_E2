@@ -57,6 +57,7 @@ def train(model, trainloader, valloader, device, config):
             # validation evaluation and logging
             if iteration % config['validate_every_n'] == (config['validate_every_n'] - 1):
                 # TODO Add missing pieces, as in the exercise parts before
+                model.eval()
 
                 total, correct = 0, 0
                 ious = []
@@ -65,6 +66,11 @@ def train(model, trainloader, valloader, device, config):
                 loss_val = 0.
                 for batch_val in valloader:
                     # TODO Add missing pieces, as in the exercise parts before
+                    ShapeNetParts.move_batch_to_device(batch_val, device)
+
+                    with torch.no_grad():
+                        prediction = model(batch_val['points'])
+                        predicted_label = torch.argmax(prediction, dim=1)
 
                     total += predicted_label.numel()
                     correct += (predicted_label == batch_val['segmentation_labels']).sum().item()
@@ -91,6 +97,7 @@ def train(model, trainloader, valloader, device, config):
                     best_accuracy = accuracy
 
                 # TODO Add missing pieces, as in the exercise parts before
+                model.train()
 
 
 def main(config):
