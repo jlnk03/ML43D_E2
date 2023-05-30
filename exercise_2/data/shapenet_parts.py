@@ -59,7 +59,7 @@ class ShapeNetParts(torch.utils.data.Dataset):
             labels = np.loadtxt(f)
 
         # subsample to 1024 points
-        idx = np.random.choice(points.shape[0], ShapeNetParts.num_points, replace=False)
+        idx = np.random.choice(points.shape[0], ShapeNetParts.num_points, replace=True)
         points = points[idx]
         labels = labels[idx]
 
@@ -67,6 +67,7 @@ class ShapeNetParts(torch.utils.data.Dataset):
         labels = [ShapeNetParts.part_id_to_overall_id[f'{category_id}_{int(label)}'] for label in labels]
 
         # convert to torch tensors
+        #labels = torch.LongTensor(labels)
         labels = torch.FloatTensor(labels)
         points = torch.FloatTensor(points)
 

@@ -39,9 +39,14 @@ def train(model, trainloader, valloader, device, config):
             # forward pass
             #print(batch['points'].shape)
             prediction = model(batch['points'])
+            #print(prediction.shape)
+            #print(batch['segmentation_labels'].shape)
 
             # compute loss
-            loss_total = loss_criterion(prediction, batch['segmentation_labels'])
+            #loss_total = loss_criterion(prediction, batch['segmentation_labels'])
+            loss_total = torch.zeros([1], dtype=batch['points'].dtype, requires_grad=True).to(device)
+            for output_idx in range(prediction.shape[2]):
+                loss_total = loss_total + loss_criterion(prediction[:, :, output_idx], batch['segmentation_labels'])
       
             # compute gradients on loss_total (backward pass)
             loss_total.backward()
@@ -71,10 +76,15 @@ def train(model, trainloader, valloader, device, config):
                 for batch_val in valloader:
                     # TODO Add missing pieces, as in the exercise parts before
                     ShapeNetParts.move_batch_to_device(batch_val, device)
+                    # batch to shape (32, 3, 1024)
+                    batch_val['points'] = batch_val['points'].permute(0, 2, 1)
+                    batch_val['segmentation_labels'] = batch_val['segmentation_labels'].long()
 
                     with torch.no_grad():
                         prediction = model(batch_val['points'])
-                        predicted_label = torch.argmax(prediction, dim=1)
+                        # prediction to long
+                        #prediction = prediction.to(torch.long)
+                        predicted_label = torch.argmax(prediction, dim=2)
 
                     total += predicted_label.numel()
                     correct += (predicted_label == batch_val['segmentation_labels']).sum().item()
@@ -89,7 +99,8 @@ def train(model, trainloader, valloader, device, config):
                             iou = I / float(U)
                         part_ious.append(iou)
                     ious.append(torch.mean(torch.stack([torch.tensor(elem, device=device) if type(elem) == int else elem for elem in part_ious])))
-
+                    
+                    #loss_val = loss_criterion(predicted_label, batch_val['segmentation_labels']).item()
                     loss_val += loss_criterion(prediction.transpose(2, 1), batch_val['segmentation_labels']).item()
 
                 accuracy = 100 * correct / total
