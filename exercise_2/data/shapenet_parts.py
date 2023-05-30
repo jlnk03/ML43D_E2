@@ -67,6 +67,6 @@ class ShapeNetParts(torch.utils.data.Dataset):
         labels = [ShapeNetParts.part_id_to_overall_id[f'{category_id}_{int(label)}'] for label in labels]
 
         # convert to torch tensors
-        labels = torch.tensor(labels)
-                  
+        labels = torch.FloatTensor(labels)
+        
         return points, labels

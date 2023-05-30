@@ -124,15 +124,15 @@ def train(model, trainloader, valloader, device, config):
 
                     with torch.no_grad():
                         # TODO: Get prediction scores
-                        prediction = model((batch['voxel']))[:, 0, :].to(device)
+                        prediction = model((batch_val['voxel']))[:, 0, :].to(device)
 
                     # TODO: Get predicted labels from scores
                     predicted_label = torch.argmax(prediction, dim=1)
 
                     # TODO: keep track of total / correct / loss_total_val
-                    total += batch['label'].shape[0]
-                    correct += (predicted_label == batch['label'].to(device)).sum().item()
-                    loss_total_val += loss_criterion(prediction, batch['label'].to(device)).item()
+                    total += batch_val['label'].shape[0]
+                    correct += (predicted_label == batch_val['label'].to(device)).sum().item()
+                    loss_total_val += loss_criterion(prediction, batch_val['label'].to(device)).item()
 
                 accuracy = 100 * correct / total
 
