@@ -74,8 +74,8 @@ def train(model, train_dataloader, val_dataloader, device, config):
         for i, batch in enumerate(train_dataloader):
             input_data, target_labels = batch
             # TODO Move input_data and target_labels to device
-            input_data.to(device)
-            target_labels.to(device)
+            input_data = input_data.to(device)
+            target_labels = target_labels.to(device)
 
             # This is where the actual training happens:
             # 1 Zero out gradients from last iteration

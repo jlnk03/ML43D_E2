@@ -9,10 +9,10 @@ from exercise_2.model.pointnet import PointNetSegmentation
 def train(model, trainloader, valloader, device, config):
 
     # TODO Declare loss and move to specified device
-    loss_criterion = None
+    loss_criterion = torch.nn.CrossEntropyLoss()
 
     # TODO Declare optimizer
-    optimizer = None
+    optimizer = torch.optim.Adam(model.parameters(), lr=config['learning_rate'])
 
     # set model to train, important if your network has e.g. dropout or batchnorm layers
     model.train()
@@ -27,6 +27,29 @@ def train(model, trainloader, valloader, device, config):
         for i, batch in enumerate(trainloader):
             # TODO Add missing pieces, as in the exercise parts before
 
+            # move batch to device
+            ShapeNetParts.move_batch_to_device(batch, device)
+
+            # zero out previously accumulated gradients
+            optimizer.zero_grad()
+
+            # forward pass
+            prediction = model(batch['points'])
+
+            # compute loss
+            loss_total = loss_criterion(prediction, batch['segmentation_labels'])
+      
+            # compute gradients on loss_total (backward pass)
+            loss_total.backward()
+
+            # update network params
+            optimizer.step()
+
+            # loss logging
+            train_loss_running += loss_total.item()
+            iteration = epoch * len(trainloader) + i
+
+            # End of TODO
             if iteration % config['print_every_n'] == (config['print_every_n'] - 1):
                 print(f'[{epoch:03d}/{i:05d}] train_loss: {train_loss_running / config["print_every_n"]:.3f}')
                 train_loss_running = 0.

@@ -26,8 +26,16 @@ class InferenceHandler3DCNN:
         input_tensor = torch.from_numpy(voxels).float().unsqueeze(0).unsqueeze(0)
 
         # TODO: Predict class
-        prediction = None
-        class_id = None
-        class_name = None
+        device = torch.device('cpu')
+        if torch.cuda.is_available():
+            device = torch.device('cuda:0')
+        else:
+            print('Using CPU')
+
+        input_tensor = input_tensor.to(device)
+        self.model.to(device)
+        prediction = self.model(input_tensor)
+        class_id = torch.argmax(prediction[:, 0, :], dim=1)
+        class_name = ShapeNetVox.classes[class_id]
 
         return class_name
