@@ -30,10 +30,14 @@ def train(model, trainloader, valloader, device, config):
             # move batch to device
             ShapeNetParts.move_batch_to_device(batch, device)
 
+            # batch to shape (32, 3, 1024)
+            batch['points'] = batch['points'].permute(0, 2, 1)
+
             # zero out previously accumulated gradients
             optimizer.zero_grad()
 
             # forward pass
+            print(batch['points'].shape)
             prediction = model(batch['points'])
 
             # compute loss

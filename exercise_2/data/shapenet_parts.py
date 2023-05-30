@@ -68,5 +68,6 @@ class ShapeNetParts(torch.utils.data.Dataset):
 
         # convert to torch tensors
         labels = torch.FloatTensor(labels)
-        
+        points = torch.FloatTensor(points)
+
         return points, labels
