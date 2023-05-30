@@ -32,6 +32,7 @@ def train(model, trainloader, valloader, device, config):
 
             # batch to shape (32, 3, 1024)
             batch['points'] = batch['points'].permute(0, 2, 1)
+            batch['segmentation_labels'] = batch['segmentation_labels'].long()
 
             # zero out previously accumulated gradients
             optimizer.zero_grad()
@@ -43,10 +44,10 @@ def train(model, trainloader, valloader, device, config):
             #print(batch['segmentation_labels'].shape)
 
             # compute loss
-            #loss_total = loss_criterion(prediction, batch['segmentation_labels'])
-            loss_total = torch.zeros([1], dtype=batch['points'].dtype, requires_grad=True).to(device)
-            for output_idx in range(prediction.shape[2]):
-                loss_total = loss_total + loss_criterion(prediction[:, :, output_idx], batch['segmentation_labels'])
+            loss_total = loss_criterion(prediction.transpose(2, 1), batch['segmentation_labels'])
+            #loss_total = torch.zeros([1], dtype=batch['points'].dtype, requires_grad=True).to(device)
+            #for output_idx in range(prediction.shape[2]):
+            #    loss_total = loss_total + loss_criterion(prediction[:, :, output_idx], batch['segmentation_labels'])
       
             # compute gradients on loss_total (backward pass)
             loss_total.backward()

@@ -37,5 +37,7 @@ class InferenceHandler3DCNN:
         prediction = self.model(input_tensor)
         class_id = torch.argmax(prediction[:, 0, :], dim=1)
         class_name = ShapeNetVox.classes[class_id]
+        # class id to class name
+        class_name = ShapeNetVox.class_name_mapping[class_name]
 
         return class_name
